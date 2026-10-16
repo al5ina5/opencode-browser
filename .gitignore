@@ -13,6 +13,9 @@ tmp
 dist
 ts-dist
 .turbo
+/packages/app/public/browsernode_kernel.js
+/packages/app/public/browsernode_kernel.wasm
+/packages/app/public/esbuild.wasm
 **/.serena
 .serena/
 **/.omo

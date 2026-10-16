@@ -11,6 +11,8 @@ import { dict as zh } from "@/i18n/zh"
 import { authFromToken } from "@/utils/server"
 import pkg from "../package.json"
 import { ServerConnection } from "./context/server"
+import { browserFetch, configureBrowserProvider } from "@/browser/api"
+import { BrowserControls } from "@/browser/controls"
 
 const DEFAULT_SERVER_URL_KEY = "opencode.settings.dat:defaultServerUrl"
 
@@ -97,15 +99,10 @@ if (!(root instanceof HTMLElement) && import.meta.env.DEV) {
 }
 
 const getCurrentUrl = () => {
-  if (location.hostname.includes("opencode.ai")) return "http://localhost:4096"
-  if (import.meta.env.DEV)
-    return `http://${import.meta.env.VITE_OPENCODE_SERVER_HOST ?? "localhost"}:${import.meta.env.VITE_OPENCODE_SERVER_PORT ?? "4096"}`
-  return location.origin
+  return "http://opencode-browser.local"
 }
 
 const getDefaultUrl = () => {
-  const lsDefault = readDefaultServerUrl()
-  if (lsDefault) return lsDefault
   return getCurrentUrl()
 }
 
@@ -128,6 +125,8 @@ const platform: Platform = {
     return stored ? ServerConnection.Key.make(stored) : null
   },
   setDefaultServer: writeDefaultServerUrl,
+  fetch: browserFetch,
+  browserRuntime: { configureProvider: configureBrowserProvider },
 }
 
 if (import.meta.env.VITE_SENTRY_DSN) {
@@ -170,7 +169,9 @@ if (root instanceof HTMLElement) {
               canonicalLocalServer={ServerConnection.key(server)}
               servers={[server]}
               disableHealthCheck
-            />
+            >
+              <BrowserControls />
+            </AppInterface>
           </AppBaseProviders>
         </PlatformProvider>
       ),

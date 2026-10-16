@@ -6,6 +6,18 @@ const serverHost = process.env.PLAYWRIGHT_SERVER_HOST ?? "127.0.0.1"
 const serverPort = process.env.PLAYWRIGHT_SERVER_PORT ?? "4096"
 const command = `bun run dev -- --host 0.0.0.0 --port ${port}`
 const reuse = !process.env.CI
+const webServer = process.env.PLAYWRIGHT_BASE_URL
+  ? undefined
+  : {
+      command,
+      url: baseURL,
+      reuseExistingServer: reuse,
+      timeout: 120_000,
+      env: {
+        VITE_OPENCODE_SERVER_HOST: serverHost,
+        VITE_OPENCODE_SERVER_PORT: serverPort,
+      },
+    }
 const workers = Number(process.env.PLAYWRIGHT_WORKERS ?? (process.env.CI ? 5 : 0)) || undefined
 export default defineConfig({
   testDir: "./e2e",
@@ -20,16 +32,7 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   workers,
   reporter: [["html", { outputFolder: "e2e/playwright-report", open: "never" }], ["line"]],
-  webServer: {
-    command,
-    url: baseURL,
-    reuseExistingServer: reuse,
-    timeout: 120_000,
-    env: {
-      VITE_OPENCODE_SERVER_HOST: serverHost,
-      VITE_OPENCODE_SERVER_PORT: serverPort,
-    },
-  },
+  webServer,
   use: {
     baseURL,
     trace: "on-first-retry",

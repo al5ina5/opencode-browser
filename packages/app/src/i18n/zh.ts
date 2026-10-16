@@ -3,6 +3,22 @@ import { dict as en } from "./en"
 type Keys = keyof typeof en
 
 export const dict = {
+  "browser.controls.title": "浏览器运行环境",
+  "browser.runtime.starting": "正在启动本地运行环境",
+  "browser.runtime.ready": "就绪",
+  "browser.runtime.limited": "支持有限",
+  "browser.runtime.chromiumOnly": "浏览器代理运行环境支持桌面版 Chromium。其他浏览器可能无法可靠运行项目。",
+  "browser.project.create": "新建项目",
+  "browser.project.prompt": "项目文件夹名称",
+  "browser.project.import": "导入 ZIP",
+  "browser.project.export": "导出 ZIP",
+  "browser.project.imported": "已导入 {{name}}",
+  "browser.provider.configure": "配置模型",
+  "browser.provider.description": "API 密钥和模型设置保存在此浏览器中，并直接发送给推理服务商。",
+  "browser.provider.environmentUnsupported": "浏览器推理无法读取环境变量，请直接输入 API 密钥。",
+  "browser.preview.title": "项目预览",
+  "browser.preview.close": "关闭",
+  "browser.terminal.title": "终端输出",
   "desktop.menu.app": "OpenCode",
   "desktop.menu.file": "文件",
   "desktop.menu.edit": "编辑",

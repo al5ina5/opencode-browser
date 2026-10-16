@@ -1,0 +1,41 @@
+diff --git a/node_modules/@foisal/nodebrowser/.bun-tag-512c3a59b794c83 b/.bun-tag-512c3a59b794c83
+new file mode 100644
+index 0000000000000000000000000000000000000000..e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
+diff --git a/node_modules/@foisal/nodebrowser/.bun-tag-6881f70b5ac0d579 b/.bun-tag-6881f70b5ac0d579
+new file mode 100644
+index 0000000000000000000000000000000000000000..e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
+diff --git a/dist/bundler/esbuild.js b/dist/bundler/esbuild.js
+index d3bbf3b4d08670e16bcfcb7972b05d954b9ede0c..67a59e028cf43ae7a583426a1893d017c6c9563b 100644
+--- a/dist/bundler/esbuild.js
++++ b/dist/bundler/esbuild.js
+@@ -8,14 +8,14 @@ async function ensureEsbuild(wasmURL) {
+     if (esbuildApi && initialized)
+         return esbuildApi;
+     // Bare specifier resolved via demo import map → ./node_modules/esbuild-wasm/esm/browser.js
+-    esbuildApi = await import('esbuild-wasm');
++    esbuildApi = await import('esbuild-wasm/esm/browser.js');
+     if (!initialized) {
+         const isBrowser = typeof window !== 'undefined' && typeof document !== 'undefined';
+         if (isBrowser) {
+             const defaultWasm = typeof document !== 'undefined'
+-                ? new URL('node_modules/esbuild-wasm/esbuild.wasm', new URL('./', document.baseURI)).href
++                ? new URL('/esbuild.wasm', document.baseURI).href
+                 : typeof location !== 'undefined'
+-                    ? new URL('node_modules/esbuild-wasm/esbuild.wasm', location.href).href
++                    ? new URL('/esbuild.wasm', location.href).href
+                     : 'https://unpkg.com/esbuild-wasm@0.25.0/esbuild.wasm';
+             await esbuildApi.initialize({
+                 wasmURL: wasmURL || defaultWasm,
+diff --git a/dist/npm/install.js b/dist/npm/install.js
+index 41f2246ad63e82db4c6865503a70cc84c1701a0e..6cc5310293b1908051d822ebca22ea2ac59f9d38 100644
+--- a/dist/npm/install.js
++++ b/dist/npm/install.js
+@@ -265,7 +265,7 @@ async function installOne(bn, spec, cwd, depth, seen, withDeps, onProgress, sign
+     if (!verMeta)
+         throw new Error(`version not found: ${name}@${ver}`);
+     const resolvedKey = `${name}@${verMeta.version}`;
+-    if (seen.has(resolvedKey))
++    if (resolvedKey !== rangeKey && seen.has(resolvedKey))
+         return;
+     seen.add(resolvedKey);
+     if (lock)

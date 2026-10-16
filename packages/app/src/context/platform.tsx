@@ -77,6 +77,18 @@ type PlatformBase = {
   /** Fetch override */
   fetch?: typeof fetch
 
+  /** Browser-local runtime extensions available only in the static OpenCode port. */
+  browserRuntime?: {
+    configureProvider(input: {
+      providerID: string
+      name: string
+      baseURL: string
+      apiKey?: string
+      headers?: Record<string, string>
+      models: Record<string, { name: string }>
+    }): Promise<void>
+  }
+
   /** Get the configured default server URL (platform-specific) */
   getDefaultServer?(): Promise<ServerConnection.Key | null>
 

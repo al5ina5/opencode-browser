@@ -11,6 +11,7 @@ import { createStore, produce } from "solid-js/store"
 import { ExternalLink } from "@/components/external-link"
 import { useServerSDK } from "@/context/server-sdk"
 import { useServerSync } from "@/context/server-sync"
+import { usePlatform } from "@/context/platform"
 import { useLanguage } from "@/context/language"
 import { type FormState, headerRow, modelRow, validateCustomProvider } from "./dialog-custom-provider-form"
 
@@ -45,6 +46,7 @@ export function CustomProviderForm(props: { autofocus?: boolean } = {}) {
   const serverSync = useServerSync()
   const serverSDK = useServerSDK()
   const language = useLanguage()
+  const platform = usePlatform()
 
   const [form, setForm] = createStore<FormState>({
     providerID: "",
@@ -131,6 +133,19 @@ export function CustomProviderForm(props: { autofocus?: boolean } = {}) {
 
   const saveMutation = useMutation(() => ({
     mutationFn: async (result: NonNullable<ReturnType<typeof validate>>) => {
+      if (platform.browserRuntime) {
+        if (result.config.env?.length) throw new Error(language.t("browser.provider.environmentUnsupported"))
+        await platform.browserRuntime.configureProvider({
+          providerID: result.providerID,
+          name: result.name,
+          baseURL: String(result.config.options.baseURL),
+          apiKey: result.key,
+          headers: result.config.options.headers as Record<string, string> | undefined,
+          models: result.config.models,
+        })
+        await serverSync().updateConfig({ provider: { [result.providerID]: result.config } })
+        return result
+      }
       if ((await serverSDK().protocol) !== "v1") throw new Error(language.t("provider.custom.unavailable"))
       const disabledProviders = serverSync().data.config.disabled_providers ?? []
       const nextDisabled = disabledProviders.filter((id) => id !== result.providerID)
